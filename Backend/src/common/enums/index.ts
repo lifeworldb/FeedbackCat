@@ -1,0 +1,20 @@
+import { registerEnumType } from '@nestjs/graphql';
+
+export enum DeveloperResponse {
+  SUCCESS_QUERY,
+  ERROR_QUERY,
+  INTERNAL_ERROR,
+  TOKEN_EXPIRED,
+  USER_ALREADY_EXISTING,
+  PRIVACY_POLICY_NOT_FOUND,
+  PRIVACY_POLICY_ALREADY_ACCEPTED,
+  TERMS_AND_CONDITIONS_NOT_FOUND,
+  TERMS_AND_CONDITIONS_ALREADY_ACCEPTED,
+  EMAIL_ERROR,
+  EMAIL_SEND_SUCCESSFUL,
+  TEMPLATE_UPDATED
+}
+
+registerEnumType(DeveloperResponse, {
+  name: 'DeveloperCode'
+});
