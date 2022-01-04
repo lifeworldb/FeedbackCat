@@ -1,16 +1,17 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { modelOptions, pre, prop, Ref, Severity } from '@typegoose/typegoose';
 import moment from 'moment-timezone';
 import { ObjectId } from 'mongodb';
+import { User } from '../../user/models/user.model';
 
 import { Node } from '../../common/interfaces/node.interface';
 
-@pre<User>('save', function (next) {
+@pre<Comment>('save', function (next) {
   this['createdAt'] = moment().tz(process.env.DATE_TIMEZONE).toDate();
   this['updatedAt'] = moment().tz(process.env.DATE_TIMEZONE).toDate();
   next();
 })
-@pre<User>('findOneAndUpdate', function () {
+@pre<Comment>('findOneAndUpdate', function () {
   this['_update'].updatedAt = moment().tz(process.env.DATE_TIMEZONE).toDate();
 })
 @ObjectType({
@@ -24,20 +25,16 @@ import { Node } from '../../common/interfaces/node.interface';
   },
   options: { allowMixed: Severity.ALLOW }
 })
-export class User implements Node {
+export class Comment implements Node {
   _id: ObjectId;
 
   @Field()
   @prop()
-  userName: string;
+  content: string;
 
-  @Field()
-  @prop()
-  name: string;
-
-  @Field()
-  @prop()
-  image: string;
+  @Field(() => User)
+  @prop({ ref: () => User })
+  user: Ref<User>;
 
   @prop()
   createdAt: Date;
@@ -45,7 +42,7 @@ export class User implements Node {
   @prop()
   updatedAt: Date;
 
-  constructor(partial: Partial<User>) {
+  constructor(partial: Partial<Comment>) {
     Object.assign(this, partial);
   }
 }

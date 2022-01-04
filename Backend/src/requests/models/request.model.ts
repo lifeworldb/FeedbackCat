@@ -1,16 +1,18 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { modelOptions, pre, prop, Ref, Severity } from '@typegoose/typegoose';
 import moment from 'moment-timezone';
 import { ObjectId } from 'mongodb';
 
 import { Node } from '../../common/interfaces/node.interface';
+import { Status } from '../dto/request.enums';
+import { Comment } from '../../comment/models/comment.model';
 
-@pre<User>('save', function (next) {
+@pre<Request>('save', function (next) {
   this['createdAt'] = moment().tz(process.env.DATE_TIMEZONE).toDate();
   this['updatedAt'] = moment().tz(process.env.DATE_TIMEZONE).toDate();
   next();
 })
-@pre<User>('findOneAndUpdate', function () {
+@pre<Request>('findOneAndUpdate', function () {
   this['_update'].updatedAt = moment().tz(process.env.DATE_TIMEZONE).toDate();
 })
 @ObjectType({
@@ -24,20 +26,32 @@ import { Node } from '../../common/interfaces/node.interface';
   },
   options: { allowMixed: Severity.ALLOW }
 })
-export class User implements Node {
+export class Request implements Node {
   _id: ObjectId;
+  
+  @Field()
+  @prop()
+  title: string;
 
   @Field()
   @prop()
-  userName: string;
+  category: string;
+
+  @Field(() => Int)
+  @prop({ default: 0 })
+  upVotes: number;
+
+  @Field(() => Status)
+  @prop({ enum: Status })
+  status: Status;
 
   @Field()
   @prop()
-  name: string;
+  description: string;
 
-  @Field()
-  @prop()
-  image: string;
+  @Field(() => Comment, { nullable: true })
+  @prop({ ref: () => Comment })
+  comments?: Ref<Comment>[];
 
   @prop()
   createdAt: Date;
@@ -45,7 +59,7 @@ export class User implements Node {
   @prop()
   updatedAt: Date;
 
-  constructor(partial: Partial<User>) {
+  constructor(partial: Partial<Request>) {
     Object.assign(this, partial);
   }
 }
