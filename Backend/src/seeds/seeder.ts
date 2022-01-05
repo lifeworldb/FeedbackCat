@@ -1,7 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { UserService } from '../user/user.service';
-import { UserCreateFields } from '../user/dto/user.inputs';
 import { DeveloperResponse } from '../common/enums';
 import { Status } from '../requests/dto/request.enums';
 import { RequestsService } from '../requests/requests.service';
@@ -84,52 +83,55 @@ export class Seeder {
       image: 'image-jackson.jpg',
       name: 'Jackson Barker',
       userName: 'countryspirit'
-    },
-  ]
+    }
+  ];
 
   private commentsSeeds = [
     {
       _id: new ObjectId(),
-      content: "Awesome idea! Trying to find framework-specific projects within the hubs can be tedious",
-      user: this.usersSeeds.filter(objt => objt.userName === 'upbeat1811')[0]._id
+      content:
+        'Awesome idea! Trying to find framework-specific projects within the hubs can be tedious',
+      user: this.usersSeeds.filter((obj) => obj.userName === 'upbeat1811')[0]._id
     },
     {
       _id: new ObjectId(),
-      content: "Please use fun, color-coded labels to easily identify them at a glance",
-      user: this.usersSeeds.filter(objt => objt.userName === 'brawnybrave')[0]._id
+      content: 'Please use fun, color-coded labels to easily identify them at a glance',
+      user: this.usersSeeds.filter((obj) => obj.userName === 'brawnybrave')[0]._id
     },
     {
       _id: new ObjectId(),
-      content: "Also, please allow styles to be applied based on system preferences. I would love to be able to browse Frontend Mentor in the evening after my device’s dark mode turns on without the bright background it currently has.",
-      user: this.usersSeeds.filter(objt => objt.userName === 'hexagon.bestagon')[0]._id
+      content:
+        'Also, please allow styles to be applied based on system preferences. I would love to be able to browse Frontend Mentor in the evening after my device’s dark mode turns on without the bright background it currently has.',
+      user: this.usersSeeds.filter((obj) => obj.userName === 'hexagon.bestagon')[0]._id
     },
     {
       _id: new ObjectId(),
-      content: 'Second this! I do a lot of late night coding and reading. Adding a dark theme can be great for preventing eye strain and the headaches that result. It’s also quite a trend with modern apps and  apparently saves battery life.',
-      user: this.usersSeeds.filter(objt => objt.userName === 'hummingbird1')[0]._id
+      content:
+        'Second this! I do a lot of late night coding and reading. Adding a dark theme can be great for preventing eye strain and the headaches that result. It’s also quite a trend with modern apps and  apparently saves battery life.',
+      user: this.usersSeeds.filter((obj) => obj.userName === 'hummingbird1')[0]._id
     }
-  ]
+  ];
 
   private requestsSeeds = [
     {
       _id: new ObjectId(),
-      title: "Add tags for solutions",
-      category: "enhancement",
+      title: 'Add tags for solutions',
+      category: 'enhancement',
       upVotes: 112,
       status: Status.SUGGESTION,
-      description: "Easier to search for solutions based on a specific stack.",
-      comments: [this.commentsSeeds[0]._id, this.commentsSeeds[1]._id],
+      description: 'Easier to search for solutions based on a specific stack.',
+      comments: [this.commentsSeeds[0]._id, this.commentsSeeds[1]._id]
     },
     {
       _id: new ObjectId(),
-      title: "Add a dark theme option",
-      category: "feature",
+      title: 'Add a dark theme option',
+      category: 'feature',
       upVotes: 99,
       status: Status.SUGGESTION,
-      description: "It would help people with light sensitivities and who prefer dark mode.",
-      comments: [this.commentsSeeds[2]._id, this.commentsSeeds[3]._id],
+      description: 'It would help people with light sensitivities and who prefer dark mode.',
+      comments: [this.commentsSeeds[2]._id, this.commentsSeeds[3]._id]
     }
-  ]
+  ];
 
   constructor(
     @Inject(UserService)
@@ -138,7 +140,7 @@ export class Seeder {
     private readonly requestService: RequestsService,
     @Inject(CommentService)
     private readonly commentsService: CommentService
-  ) { }
+  ) {}
 
   async seed() {
     await this.usersSeeder()
@@ -152,30 +154,33 @@ export class Seeder {
       });
 
     await this.requestsSeeder()
-    .then(() => {
-      this.logger.debug('Successfully completed seeding requests...');
-      Promise.resolve();
-    })
-    .catch((error) => {
-      this.logger.error('Failed seeding requests...');
-      Promise.reject(error);
-    })
+      .then(() => {
+        this.logger.debug('Successfully completed seeding requests...');
+        Promise.resolve();
+      })
+      .catch((error) => {
+        this.logger.error('Failed seeding requests...');
+        Promise.reject(error);
+      });
 
     await this.commentsSeeder()
-    .then(() => {
-      this.logger.debug('Successfully completed seeding comments...');
-      Promise.resolve();
-    }).catch((error) => {
-      this.logger.error('Failed seeding comments...');
-      Promise.reject(error);
-    })
+      .then(() => {
+        this.logger.debug('Successfully completed seeding comments...');
+        Promise.resolve();
+      })
+      .catch((error) => {
+        this.logger.error('Failed seeding comments...');
+        Promise.reject(error);
+      });
   }
 
   async usersSeeder() {
     for (const user of this.usersSeeds) {
       await this.userService.create(user).then((res) => {
         if (res.developerCode === DeveloperResponse.USER_ALREADY_EXISTING) {
-          this.logger.debug(`I cannot create the user ${user.userName}, because it already exists.`);
+          this.logger.debug(
+            `I cannot create the user ${user.userName}, because it already exists.`
+          );
         }
         if (res.developerCode === DeveloperResponse.SUCCESS_QUERY) {
           this.logger.debug('The users has been created, successfully.');

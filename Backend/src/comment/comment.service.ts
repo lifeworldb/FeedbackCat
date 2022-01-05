@@ -18,7 +18,7 @@ export class CommentService implements ICommentService {
     @InjectModel(Comment)
     private readonly model: ReturnModelType<typeof Comment>,
     private readonly configService: ConfigService,
-    private readonly logger: PinoLogger,
+    private readonly logger: PinoLogger
   ) {
     this.logger.setContext(CommentService.name);
   }
@@ -30,21 +30,22 @@ export class CommentService implements ICommentService {
    */
   create(data: CommentCreateFields): Promise<Response> {
     return new Promise(async (resolve) => {
-      this.model.create(data)
-      .then(() => {
-        return resolve({
-          message: 'Request created successfully',
-          developerCode: DeveloperResponse.SUCCESS_QUERY
+      this.model
+        .create(data)
+        .then(() => {
+          return resolve({
+            message: 'Request created successfully',
+            developerCode: DeveloperResponse.SUCCESS_QUERY
+          });
+        })
+        .catch((error) => {
+          this.logger.error(error);
+          return resolve({
+            message: 'An occurred error.',
+            developerCode: DeveloperResponse.INTERNAL_ERROR
+          });
         });
-      })
-      .catch((error) => {
-        this.logger.error(error);
-        return resolve({
-          message: 'An occurred error.',
-          developerCode: DeveloperResponse.INTERNAL_ERROR
-        });
-      })
-    })
+    });
   }
 
   /**
